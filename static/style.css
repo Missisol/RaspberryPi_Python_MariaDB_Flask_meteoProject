@@ -1,0 +1,152 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+p,
+ul[class],
+ol[class],
+li,
+figure,
+figcaption {
+  margin: 0;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+:root {
+  --white: #fff;
+  --green: #3ba639;
+  --lightgreen: #aaffa9;
+  --blue: #047df3;
+  --mediumblue: #70b0ef;
+  --lightblue: #a6cdf3;
+  --grey: #808080;
+  --lightgrey: #cecece;
+  --red: #ff0000;
+  --lightred: #ef7985;
+  --gap: 1rem;
+}
+
+/* Grid settings */
+.container {
+  display: grid;
+  grid-template-columns: 
+   1fr [container-start] minmax(0, 1200px) [container-end] 1fr;
+   gap: var(--gap);
+   padding-top: calc(var(--gap) * 2);
+   padding-bottom: calc(var(--gap) * 2);
+}
+
+.container > * {
+  grid-column: container;
+}
+
+.title {
+  font-family: 'Rubik', sans-serif;
+  font-weight: 400;
+}
+
+
+/* Header style */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.header__title {
+  color: var(--blue);
+}
+
+/* Section style */
+.section {
+  padding-top: var(--gap);
+  padding-bottom: var(--gap);
+}
+
+.section + .section {
+  border-top: 1px solid var(--lightgrey);
+}
+
+.charts__title-wrapper {
+  margin-bottom: var(--gap);
+}
+
+/* Gauge styles */
+.gauge__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: var(--gap);
+}
+
+.title--date {
+  font-size: 22px;
+}
+
+#icon-wrapper {
+  cursor: pointer;
+}
+
+.gauge__icon {
+  font-size: 30px;
+  color: var(--blue);
+}
+
+
+.gauge-wrapper,
+.box-wrapper {
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.visible {
+  display: flex;
+}
+
+.hidden {
+  display: none;
+}
+
+.box {
+  flex-basis: 300px;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-size: 20px;
+}
+
+.readings {
+  font-size: 30px;
+  color: var(--green);
+}
+
+.readings--two {
+  color: var(--blue);
+}
+
+.readings--three {
+  color: var(--grey);
+}
+
