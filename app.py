@@ -13,14 +13,12 @@ MYSQL_USER = os.getenv('MYSQL_USER')
 MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
 MYSQL_DB = os.getenv('MYSQL_DB')
 
-
 app.config['MYSQL_HOST'] = 'localhost'
 app.config["MYSQL_USER"] = MYSQL_USER
 app.config["MYSQL_PASSWORD"] = MYSQL_PASSWORD
 app.config["MYSQL_DB"] = MYSQL_DB
 
 mysql = MySQL(app)
-
 bme280_module = BME280Module()
 
 
@@ -67,6 +65,7 @@ def insert_temperature_delta():
             print(f"Error insert temperature history to bme_temerature_history: {e}")
         cursor.close()
 
+
 def insert_data(timestamp, date, temperature, humidity, pressure):
     try:
         statement = "INSERT INTO bme_data (timestamp, date, temperature, humidity, pressure) VALUES (%s, %s, %s, %s, %s)"
@@ -78,6 +77,7 @@ def insert_data(timestamp, date, temperature, humidity, pressure):
     except mysql.connection.Error as e:
         print(f"Error insert entry to bme_data: {e}")
     cursor.close()
+
 
 @app.route("/lastDataReading")
 def select_data():
