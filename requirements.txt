@@ -1,0 +1,14 @@
+click
+Flask
+importlib-metadata
+itsdangerous
+Jinja2
+MarkupSafe
+pytz
+RPi.bme280
+smbus2
+Werkzeug
+zipp
+flask-mysqldb
+mysql-connector-python
+python-dotenv
