@@ -14,7 +14,10 @@ const humidityHistoryDiv = document.getElementById("humidity-chart");
 const pressureHistoryDiv = document.getElementById("pressure-chart");
 const historyDivs = [temperatureHistoryDiv, humidityHistoryDiv, pressureHistoryDiv]
 
-const tempDeltaEl = document.querySelector('#temp-delta')
+const temperatureDeltaEl = document.querySelector('#temperature-delta')
+const humidityDeltaEl = document.querySelector('#humidity-delta')
+const pressureDeltaEl = document.querySelector('#pressure-delta')
+const deltaDivs = [temperatureDeltaEl, humidityDeltaEl, pressureDeltaEl]
 
 const gaugeDataArr = [
   { 
@@ -75,6 +78,12 @@ const historyDataArr = [
   { name: 'pressure', text: 'Давление', colorway: '808080'},
 ];
 
+const deltaDataArr = [
+  { name: 'температура', text: 'Температура', color: '3ba639' },
+  { name: 'влажность', text: 'Влажность', color: '047df3' },
+  { name: 'давление', text: 'Давление', color: '3d3c3c'},
+];
+
 function getGaugePlotly() {
   gaugeDataArr.forEach((data, idx) => {
     const trace = [
@@ -124,46 +133,42 @@ function getHystoryPlotly() {
 };
 
 function getDeltaPlotly() {
-  let datesArr;
-  let minTempArr;
-  let maxTempArr;
-
-  fetch('/tempDelta')
-  .then((res) => res.json())
-  .then((resJson) => {
-    datesArr = resJson.dates;
-    minTempArr = resJson.min_t;
-    maxTempArr = resJson.max_t;
-
-  const trace1 = {
-    x: datesArr,
-    y: minTempArr,
-    marker: {
-      color: 'rgba(1,1,1,0.0)',
-    },
-    type: 'bar',
-  };
-  const trace2 = {
-    x: datesArr,
-    y: maxTempArr,
-    marker: {
-      color: 'rgba(55,128,191,0.7)',
-    },
-    type: 'bar',
-  };
-  const data = [trace1, trace2];
-  const layout = {
-    title: 'Температурная дельта',
-    barmode: 'stack',
-    paper_bgcolor: 'rgba(245,246,249,1)',
-    plot_bgcolor: 'rgba(245,246,249,1)',
-    showlegend: false,
-    annotations: []  
-  };
-
-
-  Plotly.newPlot(tempDeltaEl, data, layout, config)
-})
+  deltaDataArr.forEach((data, idx) => {
+    const trace1 = {
+      x: [],
+      y: [],
+      name: `min ${data.name}`,
+      marker: {
+        color: 'ef7985',
+      },
+      type: 'bar',
+    };
+    const trace2 = {
+      x: [],
+      y: [],
+      name: `max ${data.name}`,
+      marker: {
+        color: data.color,
+      },
+      type: 'bar',
+    };
+    const traces = [trace1, trace2];
+    const layout = {
+      title: data.text,
+      font: {
+        size: 14,
+        color: "#808080",
+      },
+      barmode: 'group',
+      bargroupgap: 0.1,
+      legend: {
+        x: 0,
+        y: -0.35,
+      },
+    };
+  
+    Plotly.newPlot(deltaDivs[idx], traces, layout, config)
+  })
 };
 
 function updateSensorReadings() {
@@ -243,19 +248,28 @@ function updateCharts(xArray, yArray, historyDiv) {
     Plotly.update(historyDiv, data_update);
 }
 
-function updateTempDelta() {
+function updateDelta() {
   let datesArr;
   let minTempArr;
   let maxTempArr;
+  let minHumArr;
+  let maxHumArr;
+  let minPrArr;
+  let maxPrArr;
+
   fetch('/tempDelta')
     .then((res) => res.json())
     .then((resJson) => {
       datesArr = resJson.dates;
       minTempArr = resJson.min_t;
       maxTempArr = resJson.max_t;
-    })
+      minHumArr = resJson.min_h;
+      maxHumArr = resJson.max_h;
+      minPrArr = resJson.min_p;
+      maxPrArr = resJson.max_p;
 
-    const data_update = [
+    Plotly.update(
+      temperatureDeltaEl, 
       {
         x: [datesArr],
         y: [minTempArr],
@@ -264,12 +278,33 @@ function updateTempDelta() {
         x: [datesArr],
         y: [maxTempArr],
       },
-    ]
-
-    Plotly.update(tempDeltaEl, data_update);
+    );
+    Plotly.update(
+      humidityDeltaEl, 
+      {
+        x: [datesArr],
+        y: [minHumArr],
+      },
+      {
+        x: [datesArr],
+        y: [maxHumArr],
+      },
+    );
+    Plotly.update(
+      pressureDeltaEl, 
+      {
+        x: [datesArr],
+        y: [minPrArr],
+      },
+      {
+        x: [datesArr],
+        y: [maxPrArr],
+      },
+    );
+  })
 }
 
-const timer = 30000
+const timer = 300000
 // const timer = 60 * 1000 * 5
 // const timer = 60 * 1000 * 15 // every 15 minutes
 
@@ -277,6 +312,7 @@ function loop() {
   setTimeout(() => {
     updateSensorReadings();
     updateLastData();
+    updateDelta();
     loop();
   }, timer);
 }
@@ -287,5 +323,6 @@ function loop() {
   getDeltaPlotly();
   updateSensorReadings();
   updateLastData();
+  updateDelta();
   loop();
 })();

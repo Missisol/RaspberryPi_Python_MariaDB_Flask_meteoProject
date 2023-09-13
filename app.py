@@ -20,6 +20,7 @@ app.config["MYSQL_DB"] = MYSQL_DB
 
 mysql = MySQL(app)
 bme280_module = BME280Module()
+strCount = '10'
 
 
 def check_date_is_in_history_table():
@@ -96,7 +97,7 @@ def insert_data(timestamp, date, temperature, humidity, pressure):
 @app.route("/lastDataReading")
 def select_data():
     try:
-        statement = "SELECT * FROM bme_data ORDER BY timestamp DESC LIMIT " + str(10)
+        statement = "SELECT * FROM bme_data ORDER BY timestamp DESC LIMIT " + strCount
         cursor = mysql.connection.cursor()
         cursor.execute(statement)
         data = cursor.fetchall()
@@ -128,13 +129,17 @@ def select_data():
 @app.route("/tempDelta")
 def get_temp_delta():
     try:
-        statement = "SELECT * FROM bme_history ORDER BY date DESC LIMIT " + str(10)
+        statement = "SELECT * FROM bme_history ORDER BY date DESC LIMIT " + strCount
         cursor = mysql.connection.cursor()
         cursor.execute(statement)
         data = cursor.fetchall()
         dates = []
         min_t = []
         max_t = []
+        min_h = []
+        max_h = []
+        min_p = []
+        max_p = []
         fmt = '%H:%M:%S'
 
         rowCount = len(data)
@@ -144,17 +149,24 @@ def get_temp_delta():
                 dates.append(str(row[1]))
                 min_t.append(round(row[2], 2))
                 max_t.append(round(row[3], 2))
-            print(dates)
+                min_h.append(round(row[4], 2))
+                max_h.append(round(row[5], 2))
+                min_p.append(round(row[6]))
+                max_p.append(round(row[7]))
 
-            print("Successfully select temp_delta from bme_history")
+            print("Successfully select delta from bme_history")
             return jsonify(
             { 
                 "dates": dates,
                 "min_t": min_t,
                 "max_t": max_t,
+                "min_h": min_h,
+                "max_h": max_h,
+                "min_p": min_p,
+                "max_p": max_p,
             })
     except mysql.connection.Error as e:
-        print(f"Error select temp_delta from bme_history: {e}")
+        print(f"Error select delta from bme_history: {e}")
     cursor.close()
 
 
@@ -170,8 +182,7 @@ def get_sensor_readings():
     fm = '%Y-%m-%d'
     fmt = '%d-%m-%Y %H:%M:%S'
 
-    insert_data(timestamp, '2023-09-12', temperature, humidity, pressure)
-    # insert_data(timestamp, timestamp.strftime(fm), temperature, humidity, pressure)
+    insert_data(timestamp, timestamp.strftime(fm), temperature, humidity, pressure)
     check_date_is_in_history_table()
 
     return jsonify(
