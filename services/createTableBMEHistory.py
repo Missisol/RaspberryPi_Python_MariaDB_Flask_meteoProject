@@ -18,7 +18,7 @@ cursor = connection.cursor()
 
 def create_table_bmehistorytemerature():
     try:
-        statement = "CREATE OR REPLACE TABLE bme_history (id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, date DATE, min_temperature DECIMAL(4,2), max_temperature DECIMAL(4,2), min_humidity DECIMAL(4,2), max_humidity DECIMAL(4,2), min_pressure DECIMAL(4,2), max_pressure DECIMAL(4,2))"
+        statement = "CREATE OR REPLACE TABLE bme_history (id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY, date DATE, min_temperature DECIMAL(4,2), max_temperature DECIMAL(4,2), min_humidity DECIMAL(4,2), max_humidity DECIMAL(4,2), min_pressure DECIMAL, max_pressure DECIMAL)"
         cursor.execute(statement)
         connection.commit()
         print("Successfully created table bme_history")

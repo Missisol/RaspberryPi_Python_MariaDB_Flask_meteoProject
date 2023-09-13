@@ -109,6 +109,7 @@ function getHystoryPlotly() {
       type: "line",
     };
     const layout = {
+      height: 300,
       title: {
         text: data.text,
       },
@@ -268,7 +269,7 @@ function updateTempDelta() {
     Plotly.update(tempDeltaEl, data_update);
 }
 
-const timer = 300000
+const timer = 30000
 // const timer = 60 * 1000 * 5
 // const timer = 60 * 1000 * 15 // every 15 minutes
 
