@@ -27,13 +27,26 @@ def check_date_is_in_history_table():
     cursor = mysql.connection.cursor()
 
     try:
-        statement = "SELECT date FROM bme_temerature_history WHERE (date=%s)"
+        statement = "SELECT date FROM bme_history WHERE (date=%s)"
         cursor.execute(statement, [yesterday])
         dt = cursor.fetchall()
         if not dt:   
             insert_temperature_delta() 
     except mysql.connection.Error as e:
-        print(f"Error select date from bme_temerature_history: {e}")
+        print(f"Error select date from bme_history: {e}")
+    cursor.close()
+
+
+def remove_data_from_table(date):
+    cursor = mysql.connection.cursor()
+
+    try:
+        statement = "DELETE FROM bme_data WHERE (date=%s)"
+        cursor.execute(statement, [date])
+        mysql.connection.commit()
+        print("Successfully remove data from bme_data")
+    except mysql.connection.Error as e:
+        print(f"Error delete rows from bme_data: {e}")
     cursor.close()
 
 
@@ -57,12 +70,13 @@ def insert_temperature_delta():
 
     if check_yesterday_is_in_table():
         try:
-            statement = "INSERT INTO bme_temerature_history (date, min_temperature, max_temperature) SELECT (SELECT date FROM bme_data WHERE (date=%s) ORDER BY temperature ASC LIMIT 1) AS date, (SELECT  temperature FROM bme_data WHERE (date=%s) ORDER BY temperature ASC LIMIT 1) AS min_temperature, (SELECT temperature FROM bme_data WHERE (date=%s) ORDER BY temperature DESC LIMIT 1) AS max_temperature"
-            cursor.execute(statement, [yesterday, yesterday, yesterday])
+            statement = "INSERT INTO bme_history (date, min_temperature, max_temperature, min_humidity, max_humidity, min_pressure, max_pressure) SELECT (SELECT date FROM bme_data WHERE (date=%s) ORDER BY temperature ASC LIMIT 1) AS date, (SELECT temperature FROM bme_data WHERE (date=%s) ORDER BY temperature ASC LIMIT 1) AS min_temperature, (SELECT temperature FROM bme_data WHERE (date=%s) ORDER BY temperature DESC LIMIT 1) AS max_temperature, (SELECT humidity FROM bme_data WHERE (date=%s) ORDER BY humidity ASC LIMIT 1) AS min_humidity, (SELECT humidity FROM bme_data WHERE (date=%s) ORDER BY humidity DESC LIMIT 1) AS max_humidity, (SELECT pressure FROM bme_data WHERE (date=%s) ORDER BY pressure ASC LIMIT 1) AS min_pressure, (SELECT pressure FROM bme_data WHERE (date=%s) ORDER BY pressure DESC LIMIT 1) AS max_pressure"
+            cursor.execute(statement, [yesterday, yesterday, yesterday, yesterday, yesterday, yesterday, yesterday])
             mysql.connection.commit()
-            print("Successfully insert temperature history to bme_temerature_history")
+            remove_data_from_table(yesterday)
+            print("Successfully insert temperature history to bme_history")
         except mysql.connection.Error as e:
-            print(f"Error insert temperature history to bme_temerature_history: {e}")
+            print(f"Error insert temperature history to bme_history: {e}")
         cursor.close()
 
 
@@ -114,7 +128,7 @@ def select_data():
 @app.route("/tempDelta")
 def get_temp_delta():
     try:
-        statement = "SELECT * FROM bme_temerature_history ORDER BY date DESC LIMIT " + str(10)
+        statement = "SELECT * FROM bme_history ORDER BY date DESC LIMIT " + str(10)
         cursor = mysql.connection.cursor()
         cursor.execute(statement)
         data = cursor.fetchall()
@@ -132,7 +146,7 @@ def get_temp_delta():
                 max_t.append(round(row[3], 2))
             print(dates)
 
-            print("Successfully select temp_delta from bme_temerature_history")
+            print("Successfully select temp_delta from bme_history")
             return jsonify(
             { 
                 "dates": dates,
@@ -140,7 +154,7 @@ def get_temp_delta():
                 "max_t": max_t,
             })
     except mysql.connection.Error as e:
-        print(f"Error select temp_delta from bme_temerature_history: {e}")
+        print(f"Error select temp_delta from bme_history: {e}")
     cursor.close()
 
 
@@ -156,7 +170,8 @@ def get_sensor_readings():
     fm = '%Y-%m-%d'
     fmt = '%d-%m-%Y %H:%M:%S'
 
-    insert_data(timestamp, timestamp.strftime(fm), temperature, humidity, pressure)
+    insert_data(timestamp, '2023-09-12', temperature, humidity, pressure)
+    # insert_data(timestamp, timestamp.strftime(fm), temperature, humidity, pressure)
     check_date_is_in_history_table()
 
     return jsonify(

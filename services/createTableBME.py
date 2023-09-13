@@ -1,14 +1,18 @@
 import os
+from dotenv import load_dotenv
 import mysql.connector as database
 
-username = os.environ.get("username")
-password = os.environ.get("password")
+load_dotenv()
+
+MYSQL_USER = os.getenv('MYSQL_USER')
+MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD')
+MYSQL_DB = os.getenv('MYSQL_DB')
 
 connection = database.connect(
-    user='marina',
-    password='ma1ri2na3',
+    user=MYSQL_USER,
+    password=MYSQL_PASSWORD,
     host='localhost',
-    database="meteo")
+    database=MYSQL_DB)
 
 cursor = connection.cursor()
 
