@@ -165,6 +165,11 @@ def get_temp_delta():
                 "min_p": min_p,
                 "max_p": max_p,
             })
+        else: 
+            return jsonify(
+            {
+                "dates": [],
+            })
     except mysql.connection.Error as e:
         print(f"Error select delta from bme_history: {e}")
     cursor.close()

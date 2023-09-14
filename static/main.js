@@ -260,47 +260,49 @@ function updateDelta() {
   fetch('/tempDelta')
     .then((res) => res.json())
     .then((resJson) => {
-      datesArr = resJson.dates;
-      minTempArr = resJson.min_t;
-      maxTempArr = resJson.max_t;
-      minHumArr = resJson.min_h;
-      maxHumArr = resJson.max_h;
-      minPrArr = resJson.min_p;
-      maxPrArr = resJson.max_p;
+      if (resJson.dates.length) {
+        datesArr = resJson.dates;
+        minTempArr = resJson.min_t;
+        maxTempArr = resJson.max_t;
+        minHumArr = resJson.min_h;
+        maxHumArr = resJson.max_h;
+        minPrArr = resJson.min_p;
+        maxPrArr = resJson.max_p;
 
-    Plotly.update(
-      temperatureDeltaEl, 
-      {
-        x: [datesArr],
-        y: [minTempArr],
-      },
-      {
-        x: [datesArr],
-        y: [maxTempArr],
-      },
-    );
-    Plotly.update(
-      humidityDeltaEl, 
-      {
-        x: [datesArr],
-        y: [minHumArr],
-      },
-      {
-        x: [datesArr],
-        y: [maxHumArr],
-      },
-    );
-    Plotly.update(
-      pressureDeltaEl, 
-      {
-        x: [datesArr],
-        y: [minPrArr],
-      },
-      {
-        x: [datesArr],
-        y: [maxPrArr],
-      },
-    );
+      Plotly.update(
+        temperatureDeltaEl, 
+        {
+          x: [datesArr],
+          y: [minTempArr],
+        },
+        {
+          x: [datesArr],
+          y: [maxTempArr],
+        },
+      );
+      Plotly.update(
+        humidityDeltaEl, 
+        {
+          x: [datesArr],
+          y: [minHumArr],
+        },
+        {
+          x: [datesArr],
+          y: [maxHumArr],
+        },
+      );
+      Plotly.update(
+        pressureDeltaEl, 
+        {
+          x: [datesArr],
+          y: [minPrArr],
+        },
+        {
+          x: [datesArr],
+          y: [maxPrArr],
+        },
+      );
+    }
   })
 }
 
