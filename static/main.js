@@ -306,9 +306,9 @@ function updateDelta() {
   })
 }
 
-const timer = 300000
+//const timer = 300000
 // const timer = 60 * 1000 * 5
-// const timer = 60 * 1000 * 15 // every 15 minutes
+const timer = 60 * 1000 * 15 // every 15 minutes
 
 function loop() {
   setTimeout(() => {
